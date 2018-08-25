@@ -1,4 +1,4 @@
-3D Space Ship
+3D Spaceship
 ===========
  
 ## Setup
