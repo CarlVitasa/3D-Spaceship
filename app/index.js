@@ -18,8 +18,9 @@ from '../node_modules/three';
 
 const WIDTH = 640;
 const HEIGHT = 640;
-const MOUSE_OFFSET_X = 9;
-const MOUSE_OFFSET_Y = 9;
+const CAMERA_Z_POSITION = 30;
+const MOUSE_OFFSET = CAMERA_Z_POSITION/3.3;
+const SPACESHIP_LERP_VAUE = 0.35;
 const RATIO = WIDTH/HEIGHT;
 
 class App {
@@ -38,9 +39,9 @@ class App {
 
     // camera
     this.camera = new PerspectiveCamera(35, WIDTH / HEIGHT, 1, 10000);
-    this.camera.position.set(0, 0, 30);
+    this.camera.position.set(0, 0, CAMERA_Z_POSITION);
 
-    // model
+    // spaceship model
     const objectLoader = new ObjectLoader();
     objectLoader.load(
       "./assets/models/json/model.json",
@@ -99,17 +100,13 @@ class App {
     requestAnimationFrame(this.animate);
     this.renderer.render(this.scene, this.camera);
     
-    // this.spaceship.position.x = mouse.x*MOUSE_OFFSET;
-    // this.spaceship.position.y = mouse.y*MOUSE_OFFSET;
-    
-    
     const lerpTo = new Vector3(
-        this.mouse.x*MOUSE_OFFSET_X,
-        this.mouse.y*MOUSE_OFFSET_Y,
+        this.mouse.x*MOUSE_OFFSET,
+        this.mouse.y*MOUSE_OFFSET,
         this.spaceship.position.z,
       );
     
-    this.spaceship.position.lerp(lerpTo, 0.3);
+    this.spaceship.position.lerp(lerpTo, SPACESHIP_LERP_VAUE);
     
     const sign = new Vector2(
       this.spaceship.position.x,
@@ -119,12 +116,12 @@ class App {
         lerpTo.x, 
         lerpTo.y));  
     
-    const valX = this.spaceship.position.x - lerpTo.x;
-    const valY = this.spaceship.position.y - lerpTo.y;
+    const spaceshipRotationX = this.spaceship.position.x - lerpTo.x;
+    const spaceshipRotationY = this.spaceship.position.y - lerpTo.y;
    
-    this.spaceship.rotation.z = valX;
-    this.spaceship.rotation.x = -valY;
-    this.spaceship.rotation.y = valX;
+    this.spaceship.rotation.z = spaceshipRotationX;
+    this.spaceship.rotation.x = -spaceshipRotationY;
+    this.spaceship.rotation.y = spaceshipRotationX;
     
     this.meshSphere.position.x = lerpTo.x;
     this.meshSphere.position.y = lerpTo.y;
