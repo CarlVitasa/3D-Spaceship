@@ -42,16 +42,15 @@ class App {
         // spaceship model
         const objectLoader = new ObjectLoader();
         objectLoader.load("./assets/models/json/model.json", obj => {
-            // TODO: says this.spaceship is undefined but is working
             this.spaceship = obj;
             this.scene.add(this.spaceship);
         });
 
         // debug sphere
-        const geoSphere = new SphereGeometry(0.1, 8);
+        const geoSphere = new SphereGeometry();
         const matSphere = new MeshBasicMaterial({ color: 0xff0000 });
         this.meshSphere = new Mesh(geoSphere, matSphere);
-        // scene.add(meshSphere);
+        //this.scene.add(this.meshSphere);
 
         // lighting
         const ambientLight = new AmbientLight(0xffffff, 0.9);
@@ -60,6 +59,7 @@ class App {
         this.addEventListeners();
         this.animate();
         this.onResize();
+        this.generateWall();
     }
     addEventListeners = () => {
         this.renderer.domElement.addEventListener(
@@ -120,6 +120,31 @@ class App {
             this.meshSphere.position.y = lerpTo.y;
         }
     };
+
+    generateWall = () => {
+        // cube
+        const geometry = new BoxGeometry(1, 1, 1);
+        const material = new MeshStandardMaterial({
+            color: 0x26547c,
+            flatShading: true,
+            metalness: 0,
+            roughness: 1
+        });
+        let z = -10;
+        for (let x = -9; x < 10; x++) {
+            for (let y = -9; y < 10; y++) {
+                this.cube = new Mesh(geometry, material);
+                if (this.cube) {
+                    this.cube.position.set(x, y, z);
+                    if (x != -7 || y != 7) {
+                        this.scene.add(this.cube);
+                    }
+                    console.log(this.cube.position);
+                }
+            }
+        }
+    };
+
     animate = () => {
         requestAnimationFrame(this.animate);
         this.renderer.render(this.scene, this.camera);
