@@ -12,7 +12,8 @@ import {
     Mesh,
     SphereGeometry,
     ObjectLoader,
-    AmbientLight
+    AmbientLight,
+    Object3D
 } from "../node_modules/three";
 
 const WIDTH = 640;
@@ -21,6 +22,9 @@ const CAMERA_Z_POSITION = 30;
 const MOUSE_OFFSET = CAMERA_Z_POSITION / 3.3;
 const SPACESHIP_LERP_VAUE = 0.35;
 const RATIO = WIDTH / HEIGHT;
+let bob_height = 0;
+const BOB_INTERVAL = 6;
+const BOB_SPEED = 0.2;
 
 class App {
     constructor() {
@@ -44,13 +48,18 @@ class App {
         objectLoader.load("./assets/models/json/model.json", obj => {
             this.spaceship = obj;
             this.scene.add(this.spaceship);
+
+            // spaceship parent
+            this.parent = new Object3D();
+            this.parent.add(this.spaceship);
+            this.scene.add(this.parent);
         });
 
         // debug sphere
         const geoSphere = new SphereGeometry();
         const matSphere = new MeshBasicMaterial({ color: 0xff0000 });
         this.meshSphere = new Mesh(geoSphere, matSphere);
-        //this.scene.add(this.meshSphere);
+        // this.scene.add(this.meshSphere);
 
         // lighting
         const ambientLight = new AmbientLight(0xffffff, 0.9);
@@ -104,20 +113,31 @@ class App {
             const lerpTo = new Vector3(
                 this.mouse.x * MOUSE_OFFSET,
                 this.mouse.y * MOUSE_OFFSET,
-                this.spaceship.position.z
+                this.parent.position.z
             );
 
-            this.spaceship.position.lerp(lerpTo, SPACESHIP_LERP_VAUE);
+            this.parent.position.lerp(lerpTo, SPACESHIP_LERP_VAUE);
 
-            const spaceshipRotationX = this.spaceship.position.x - lerpTo.x;
-            const spaceshipRotationY = this.spaceship.position.y - lerpTo.y;
+            const spaceshipRotationX = this.parent.position.x - lerpTo.x;
+            const spaceshipRotationY = this.parent.position.y - lerpTo.y;
 
-            this.spaceship.rotation.z = spaceshipRotationX;
-            this.spaceship.rotation.x = -spaceshipRotationY;
-            this.spaceship.rotation.y = spaceshipRotationX;
+            this.parent.rotation.z = spaceshipRotationX;
+            this.parent.rotation.x = -spaceshipRotationY;
+            this.parent.rotation.y = spaceshipRotationX;
 
-            this.meshSphere.position.x = lerpTo.x;
-            this.meshSphere.position.y = lerpTo.y;
+            // this.meshSphere.position.x = lerpTo.x;
+            // this.meshSphere.position.y = lerpTo.y;
+            this.spaceship.position.set(
+                0,
+                Math.sin(bob_height) / BOB_INTERVAL,
+                0
+            );
+            this.spaceship.rotation.set(
+                Math.sin(bob_height * 0.95) / (BOB_INTERVAL * 3),
+                0,
+                0
+            );
+            bob_height += BOB_SPEED;
         }
     };
 
@@ -139,7 +159,7 @@ class App {
                     if (x != -7 || y != 7) {
                         this.scene.add(this.cube);
                     }
-                    console.log(this.cube.position);
+                    // console.log(this.cube.position);
                 }
             }
         }
