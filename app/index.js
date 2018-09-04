@@ -22,9 +22,10 @@ const CAMERA_Z_POSITION = 30;
 const MOUSE_OFFSET = CAMERA_Z_POSITION / 3.3;
 const SPACESHIP_LERP_VAUE = 0.35;
 const RATIO = WIDTH / HEIGHT;
-let bob_height = 0;
-const BOB_INTERVAL = 6;
-const BOB_SPEED = 0.2;
+let bobCurrentSpeed = 0;
+const BOB_HEIGHT = 0.15;
+const BOB_INTERVAL = 0.2;
+const BOB_SPEED = 1;
 
 class App {
     constructor() {
@@ -129,15 +130,16 @@ class App {
             // this.meshSphere.position.y = lerpTo.y;
             this.spaceship.position.set(
                 0,
-                Math.sin(bob_height) / BOB_INTERVAL,
+                BOB_HEIGHT * Math.sin(bobCurrentSpeed * BOB_INTERVAL),
                 0
             );
             this.spaceship.rotation.set(
-                Math.sin(bob_height * 0.95) / (BOB_INTERVAL * 3),
+                (BOB_HEIGHT / 8) *
+                    Math.sin(bobCurrentSpeed * (BOB_INTERVAL * 2)),
                 0,
                 0
             );
-            bob_height += BOB_SPEED;
+            bobCurrentSpeed += BOB_SPEED;
         }
     };
 
